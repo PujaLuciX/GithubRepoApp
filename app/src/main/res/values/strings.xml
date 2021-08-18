@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GitHubRepoTrending</string>
+    <string name="trending">Trending</string>
+    <string name="something_went_wrong_title">Something went wrong ..</string>
+    <string name="something_went_wrong_message_body">An Alien is probably blocking your signal.</string>
+    <string name="retry">RETRY</string>
+</resources>
