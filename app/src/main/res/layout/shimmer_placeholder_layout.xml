@@ -1,0 +1,47 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fadeScrollbars="true"
+    android:paddingTop="@dimen/twenty_one_dp"
+    android:paddingEnd="@dimen/thirty_six_dp"
+    android:paddingStart="@dimen/sixteen_dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/item_avatar_img"
+        android:layout_height="@dimen/thirty_two_dp"
+        android:layout_width="@dimen/thirty_two_dp"
+        app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+        android:background="@color/shimmer_placeholder"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/item_author"
+        android:layout_width="@dimen/hundred_dp"
+        android:layout_height="@dimen/eight_dp"
+        android:layout_marginStart="@dimen/sixteen_dp"
+        android:background="@drawable/rounded_corner_rectangle"
+        app:layout_constraintStart_toEndOf="@+id/item_avatar_img"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/item_name"
+        android:layout_width="@dimen/two_hundred_sixty_dp"
+        android:layout_height="@dimen/eight_dp"
+        android:layout_marginStart="@dimen/sixteen_dp"
+        android:layout_marginTop="@dimen/sixteen_dp"
+        android:background="@drawable/rounded_corner_rectangle"
+        app:layout_constraintStart_toEndOf="@+id/item_avatar_img"
+        app:layout_constraintTop_toBottomOf="@+id/item_author" />
+
+    <View
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/one_dp"
+        android:layout_marginTop="@dimen/twenty_one_dp"
+        android:background="@color/grey_seperation_line"
+        app:layout_constraintTop_toBottomOf="@+id/item_name"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
