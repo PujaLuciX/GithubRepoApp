@@ -5,6 +5,70 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fadeScrollbars="true"
     tools:context=".trendingpage.TrendingActivity">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fifty_six_dp"
+        android:paddingTop="@dimen/fourteen_dp"
+        android:paddingEnd="@dimen/sixteen_dp"
+        android:textColor="@color/header_trending"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/trending"
+        android:textSize="@dimen/twenty_four_sp"
+        android:textAlignment="center"
+        android:background="@color/white"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:drawableRightCompat="@drawable/more_black"
+        tools:ignore="RtlSymmetry" />
+
+    <View
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/one_dp"
+        android:background="@color/grey_seperation_line"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+            <include layout="@layout/shimmer_placeholder_layout" />
+
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_repo_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/fifty_six_dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        tools:listitem="@layout/item_repo_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
