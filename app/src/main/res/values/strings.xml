@@ -9,4 +9,12 @@
     <string name="fork">fork</string>
     <string name="star">star</string>
 
+    <!--for hard-coded text-->
+    <string name="user_name">kusti8</string>
+    <string name="repo_name">proton-native</string>
+    <string name="language">Javascript</string>
+    <string name="star_count">14,236</string>
+    <string name="fork_count">4,376</string>
+    <string name="repo_description">A React environment for cross platform native desktop apps. A React environment for cross platform native desktop apps.</string>
+
 </resources>
