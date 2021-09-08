@@ -23,7 +23,7 @@
         <activity
             android:name=".trendingpage.TrendingActivity"
             android:label="@string/trending"
-            android:theme="@style/Theme.AppCompat.Light"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
