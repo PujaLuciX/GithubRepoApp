@@ -9,12 +9,6 @@
     android:paddingRight="@dimen/sixteen_dp"
     android:paddingLeft="@dimen/sixteen_dp">
 
-    <data>
-        <variable
-            android:name="RepoListModel"
-            android:type="com.assignment.githubrepoapp.data.model" />
-    </data>
-
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/item_avatar_img"
         android:layout_height="@dimen/thirty_two_dp"
@@ -142,7 +136,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/one_dp"
         android:layout_marginTop="@dimen/sixteen_dp"
-        android:background="@color/grey_seperation_line"
+        android:background="@color/grey_separation_line"
         app:layout_constraintTop_toBottomOf="@+id/item_language"/>
 
     <androidx.constraintlayout.widget.Group

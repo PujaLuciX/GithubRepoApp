@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/one_dp"
         android:layout_marginTop="@dimen/twenty_one_dp"
-        android:background="@color/grey_seperation_line"
+        android:background="@color/grey_separation_line"
         app:layout_constraintTop_toBottomOf="@+id/item_name"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
