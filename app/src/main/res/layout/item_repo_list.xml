@@ -140,11 +140,11 @@
         app:layout_constraintTop_toBottomOf="@+id/item_language"/>
 
     <androidx.constraintlayout.widget.Group
+        android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="item_description,language_symbol,item_language,
         star_symbol,item_star,fork_symbol,item_fork"
-        android:visibility="gone"
-        android:id="@+id/group" />
+        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

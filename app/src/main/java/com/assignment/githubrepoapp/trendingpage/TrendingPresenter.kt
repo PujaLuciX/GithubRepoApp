@@ -1,14 +1,16 @@
 package com.assignment.githubrepoapp.trendingpage
 
-class TrendingPresenter(
+class TrendingPresenter (
     private val view : TrendingContract.View
 ) : TrendingContract.Presenter {
+
+    lateinit var navigator: TrendingContract.Navigator
     init {
-        view.setPresenter(this)
+        view?.setPresenter(this)
     }
 
-    override fun onViewCreated() {
-        TODO("Not yet implemented")
+    override fun loadErrorScreen() {
+        navigator.launchErrorScreen()
     }
 
     override fun onDestroy() {
