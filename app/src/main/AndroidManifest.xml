@@ -24,7 +24,7 @@
             android:name=".trendingpage.TrendingActivity"
             android:label="@string/trending"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:configChanges="orientation|keyboardHidden">
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -35,7 +35,7 @@
             android:name="com.assignment.githubrepoapp.errorpage.ErrorNoInternetActivity"
             android:label="@string/trending"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:configChanges="orientation|keyboardHidden" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
     </application>
 
 </manifest>

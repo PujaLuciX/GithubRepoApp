@@ -3,11 +3,8 @@ package com.assignment.githubrepoapp.trendingpage
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -94,6 +91,14 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
                 getData()
             }, 4000)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(outState: Bundle) {
+        super.onRestoreInstanceState(outState)
     }
 
     override fun onStart() {
