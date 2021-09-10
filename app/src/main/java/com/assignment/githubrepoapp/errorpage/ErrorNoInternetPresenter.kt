@@ -1,15 +1,35 @@
 package com.assignment.githubrepoapp.errorpage
 
-import com.assignment.githubrepoapp.trendingpage.TrendingContract
+import android.content.Context
+import com.assignment.githubrepoapp.navigator.Navigator
 
 class ErrorNoInternetPresenter (
-    private val view : ErrorNoInternetContract.View
+    private var view : ErrorNoInternetContract.View?,
+    private val context : Context,
+    private val navigator : Navigator
 ) : ErrorNoInternetContract.Presenter {
-    init {
-        view.setPresenter(this)
+
+    override fun onRetryButtonClick() {
+        navigator.launchTrendingPage()
     }
 
     override fun onDestroy() {
-        TODO("Not yet implemented")
+        view = null
+    }
+
+    companion object {
+        fun createAndAttach(
+            view : ErrorNoInternetContract.View,
+            context : Context,
+            navigator: Navigator
+        ): ErrorNoInternetContract.Presenter {
+            val errorNoInternetPresenter = ErrorNoInternetPresenter(
+                view,
+                context,
+                navigator
+            )
+            view.setPresenter(errorNoInternetPresenter)
+            return errorNoInternetPresenter
+        }
     }
 }

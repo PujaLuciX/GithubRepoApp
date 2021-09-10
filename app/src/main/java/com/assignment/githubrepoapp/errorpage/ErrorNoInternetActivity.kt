@@ -1,11 +1,12 @@
 package com.assignment.githubrepoapp.errorpage
 
-import android.R.attr.button
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.assignment.githubrepoapp.R
+import com.assignment.githubrepoapp.navigator.Navigator
 import com.assignment.githubrepoapp.trendingpage.TrendingActivity
+import com.assignment.githubrepoapp.trendingpage.TrendingPresenter
 import kotlinx.android.synthetic.main.activity_error_page.*
 
 
@@ -15,10 +16,10 @@ class ErrorNoInternetActivity : AppCompatActivity(), ErrorNoInternetContract.Vie
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_error_page)
+        ErrorNoInternetPresenter.createAndAttach(this, applicationContext, navigator = Navigator(this))
 
         retry_button.setOnClickListener {
-             val intent = Intent(this, TrendingActivity::class.java)
-             startActivity(intent)
+             presenter.onRetryButtonClick()
         }
     }
 
@@ -30,7 +31,9 @@ class ErrorNoInternetActivity : AppCompatActivity(), ErrorNoInternetContract.Vie
         super.onDestroy()
     }
 
-    override fun setPresenter(presenter: ErrorNoInternetContract.Presenter) {
+    override fun setPresenter(
+        presenter: ErrorNoInternetContract.Presenter
+    ) {
         this.presenter = presenter
     }
 }
