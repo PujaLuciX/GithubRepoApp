@@ -31,6 +31,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.assignment.githubrepoapp.errorpage.ErrorNoInternetActivity"
+            android:label="@string/trending"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:configChanges="orientation|keyboardHidden" />
     </application>
 
 </manifest>

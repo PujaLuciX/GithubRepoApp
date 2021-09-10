@@ -4,13 +4,8 @@ class TrendingPresenter (
     private val view : TrendingContract.View
 ) : TrendingContract.Presenter {
 
-    lateinit var navigator: TrendingContract.Navigator
     init {
-        view?.setPresenter(this)
-    }
-
-    override fun loadErrorScreen() {
-        navigator.launchErrorScreen()
+        view.setPresenter(this)
     }
 
     override fun onDestroy() {

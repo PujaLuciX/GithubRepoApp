@@ -1,11 +1,13 @@
 package com.assignment.githubrepoapp.trendingpage
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -15,6 +17,7 @@ import com.android.volley.toolbox.Volley
 import com.assignment.githubrepoapp.R
 import com.assignment.githubrepoapp.adapter.RepoListAdapter
 import com.assignment.githubrepoapp.data.model.RepoListModel
+import com.assignment.githubrepoapp.errorpage.ErrorNoInternetActivity
 import kotlinx.android.synthetic.main.activity_trending.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -33,14 +36,7 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
         recycler_view_repo_list.layoutManager = LinearLayoutManager(this)
         adapter = RepoListAdapter(repoList, context = applicationContext)
         recycler_view_repo_list.adapter = adapter
-
-        swipe_refresh_list.setOnRefreshListener {
-            swipe_refresh_list.visibility = View.VISIBLE
-            Handler().postDelayed(Runnable {
-                swipe_refresh_list.isRefreshing = false
-                getData()
-            }, 4000)
-        }
+        pullToRefresh()
     }
 
     private fun getData() {
@@ -51,7 +47,6 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
                 response ->
                 try {
                     stopShimmerShowView()
-                    //Log.d("Puja: ", "THIS IS THE RESPONSE: "+response.toString())
                     for (i in 0 until response.length()) {
                         val jsonObject : JSONObject = response.getJSONObject(i)
                         repoList.add(
@@ -77,14 +72,12 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
 
             }, Response.ErrorListener {
                 error -> error.printStackTrace()
-                presenter.loadErrorScreen()
+                //Log.d("Puja: ", "No Internet Connection $ ")
+                val intent = Intent(this, ErrorNoInternetActivity::class.java)
+                startActivity(intent)
             }
         )
         requestQueue.add(jsonArrayRequest)
-    }
-
-    override fun displayTrendingRepoName(name: String) {
-        TODO("Not yet implemented")
     }
 
     private fun stopShimmerShowView() {
@@ -93,12 +86,18 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
         recycler_view_repo_list.visibility = View.VISIBLE
     }
 
+    private fun pullToRefresh() {
+        swipe_refresh_list.setOnRefreshListener {
+            swipe_refresh_list.visibility = View.VISIBLE
+            Handler().postDelayed(Runnable {
+                swipe_refresh_list.isRefreshing = false
+                getData()
+            }, 4000)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
-        Log.d("Puja: ", "Inside onStart()")
-        if(repoList.size == 0) {
-            //getData()
-        }
     }
 
     override fun onDestroy() {

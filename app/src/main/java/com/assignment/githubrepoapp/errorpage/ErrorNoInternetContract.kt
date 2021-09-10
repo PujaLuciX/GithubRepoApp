@@ -1,9 +1,9 @@
-package com.assignment.githubrepoapp.trendingpage
+package com.assignment.githubrepoapp.errorpage
 
 import com.assignment.githubrepoapp.BasePresenter
 import com.assignment.githubrepoapp.BaseView
 
-interface TrendingContract {
+class ErrorNoInternetContract {
     interface Presenter : BasePresenter {
 
     }
