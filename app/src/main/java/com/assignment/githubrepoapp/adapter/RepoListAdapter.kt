@@ -17,6 +17,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.assignment.githubrepoapp.R
 import com.assignment.githubrepoapp.data.model.RepoListModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.android.synthetic.main.item_repo_list.view.*
 
@@ -50,16 +52,17 @@ class RepoListAdapter(repoListModelArrayList: MutableList<RepoListModel>, contex
         holder.itemLanguage.text = repoModal.language
         holder.itemStar.text = repoModal.stars.toString()
         holder.itemFork.text = repoModal.forks.toString()
-        val mDrawable: LayerDrawable = ContextCompat.getDrawable(context,
+        //Log.d("Puja: ", "Color url of language is " + Color.parseColor(repoModal.languageSymbolColor))
+        /*val mDrawable: LayerDrawable = ContextCompat.getDrawable(context,
                 R.drawable.solid_circle) as LayerDrawable
         val  shape =   mDrawable.findDrawableByLayerId(R.id.solidCircle) as (GradientDrawable)
         shape.setColor(Color.parseColor(repoModal.languageSymbolColor))
-        holder.itemLanguageSymbolColor.setImageDrawable(mDrawable)
+        holder.itemLanguageSymbolColor.setImageDrawable(mDrawable)*/
+        holder.itemLanguageSymbolColor.setColorFilter(Color.parseColor(repoModal.languageSymbolColor))
 
-        Log.d("Puja: ", "Image url is " + Uri.parse(repoModal.avatar))
-        holder.itemAvatarImg.setImageURI(null);
-        holder.itemAvatarImg.setImageURI(Uri.parse(repoModal.avatar))
-        Log.d("Puja: ", "Value set in Holder.....onBindViewHolder(): called" + position.toString())
+        //Log.d("Puja: ", "Image url is " + Uri.parse(repoModal.avatar))
+        Glide.with(context).load(Uri.parse(repoModal.avatar)).apply(RequestOptions.circleCropTransform()).into(holder.itemAvatarImg)
+        //Log.d("Puja: ", "Value set in Holder.....onBindViewHolder(): called" + position.toString())
 
         val isExpanded = position == mExpandedPosition
         holder.group.setVisibility(if (isExpanded) View.VISIBLE else View.GONE)
