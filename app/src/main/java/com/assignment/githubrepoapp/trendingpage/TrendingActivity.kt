@@ -1,9 +1,15 @@
 package com.assignment.githubrepoapp.trendingpage
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.Gravity
+import android.view.MenuInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
+import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.assignment.githubrepoapp.R
@@ -27,6 +33,37 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
         adapter = RepoListAdapter(repoList, context = applicationContext)
         recycler_view_repo_list.adapter = adapter
         pullToRefresh()
+        threeDotClick()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun threeDotClick() {
+        header.setOnTouchListener(OnTouchListener { v, event ->
+            val DRAWABLE_RIGHT = 2
+            //Log.i("Puja: ","Event Action = "+event.action)
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                if (event.rawX >= header.getPaddingRight() - header.getCompoundDrawables().get(DRAWABLE_RIGHT).getBounds().width()) {
+                    displayPopUp(v)
+                    return@OnTouchListener true
+                }
+            }
+            false
+        })
+    }
+
+    private fun displayPopUp(v: View) {
+        Log.i("Puja: ", "Displaying pop up !!")
+        val popupMenu = PopupMenu(this, v, Gravity.END)
+        val inflater: MenuInflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.popup_menu,popupMenu.menu)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.sort_name -> rearrangeListByName()
+                R.id.sort_stars -> rearrangeListByStars()
+            }
+            true
+        }
+        popupMenu.show()
     }
 
     override fun stopShimmer() {
@@ -74,6 +111,16 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
                 presenter.getData()
             }, 4000)
         }
+    }
+
+    private fun rearrangeListByName() {
+        repoList.sortBy{it.name}
+        notifyAdapterDataSetChanged()
+    }
+
+    private fun rearrangeListByStars() {
+        repoList.sortByDescending{it.stars}
+        notifyAdapterDataSetChanged()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

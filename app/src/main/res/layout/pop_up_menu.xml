@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/pop_up_frame"
+    android:layout_width="@dimen/hundred_dp"
+    android:layout_height="@dimen/one_hundred_twelve_dp">
+
+    <TextView
+        android:id="@+id/menu_top"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/eight_dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/sort_by_stars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/roboto"
+        android:padding="@dimen/sixteen_dp"
+        android:text="@string/sort_by_stars"
+        android:textColor="@color/black"
+        android:textSize="@dimen/fifteen_sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu_top" />
+
+    <TextView
+        android:id="@+id/sort_by_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/roboto"
+        android:padding="@dimen/sixteen_dp"
+        android:text="@string/sort_by_name"
+        android:textColor="@color/black"
+        android:textSize="@dimen/fifteen_sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sort_by_stars" />
+
+    <TextView
+        android:id="@+id/menu_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/eight_dp"
+        android:background="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sort_by_name" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,10 @@
     <string name="fork">fork</string>
     <string name="star">star</string>
 
+    <!--option menu item-->
+    <string name="sort_by_name">Sort by name</string>
+    <string name="sort_by_stars">Sort by stars</string>
+
     <!--for hard-coded text-->
     <string name="user_name">kusti8</string>
     <string name="repo_name">proton-native</string>
