@@ -7,6 +7,12 @@ import com.assignment.githubrepoapp.data.model.RepoListModel
 interface TrendingContract {
     interface Presenter : BasePresenter {
         fun getData()
+
+        fun retriveData()
+
+        fun rearrangeListByName()
+
+        fun rearrangeListByStars()
     }
 
     interface View : BaseView<Presenter> {
@@ -16,9 +22,9 @@ interface TrendingContract {
 
         fun showRecyclerView()
 
-        fun notifyAdapterItemInserted(position: Int, repoModel: RepoListModel)
+        fun notifyAdapterItemInserted(position: Int)
 
-        fun notifyAdapterDataSetChanged()
+        fun initAdapter(repoListModelArrayList : MutableList<RepoListModel>)
 
         fun clearAdapterData()
     }
