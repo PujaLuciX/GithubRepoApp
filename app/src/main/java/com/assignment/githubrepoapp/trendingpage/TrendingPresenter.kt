@@ -29,7 +29,7 @@ class TrendingPresenter (
     private var repoListModelArrayList = ArrayList<RepoListModel>()
 
     override fun getData() {
-        if (checkDuration()) {
+        if (checkCacheNotExpired()) {
             repoListModelArrayList.addAll(dbHelper.getReposFromDb())
             view?.initAdapter(repoListModelArrayList)
         } else {
@@ -52,24 +52,21 @@ class TrendingPresenter (
                     for (i in 0 until response.length()) {
                         val jsonObject : JSONObject = response.getJSONObject(i)
                         val repo = RepoListModel(
-                            jsonObject.getString("name"),
-                            jsonObject.getString("author"),
-                            jsonObject.getString("avatar"),
-                            jsonObject.getString("description"),
-                            jsonObject.getString("language"),
-                            jsonObject.getString("languageColor"),
-                            jsonObject.getString("stars").toInt(),
-                            jsonObject.getString("forks").toInt()
+                            jsonObject.getString(NAME),
+                            jsonObject.getString(AUTHOR),
+                            jsonObject.getString(AVATAR),
+                            jsonObject.getString(DESCRIPTION),
+                            jsonObject.getString(LANGUAGE),
+                            jsonObject.getString(LANGUAGE_COLOR),
+                            jsonObject.getString(STARS).toInt(),
+                            jsonObject.getString(FORKS).toInt()
                         )
-                        Log.d(
-                            "Puja: ",
-                            "Notifying Adapter notifyItemInserted ( $i ) $ in presenter "
-                        )
+                        Log.d("Puja: ", "Notifying Adapter notifyItemInserted ( $i ) in presenter")
                         repoListModelArrayList.add(repo)
                         view?.notifyAdapterItemInserted(i)
                         dbHelper.saveReposToDb(repo)
                     }
-                    sharedPreferences.edit().putLong("cacheTime", Date().time)
+                    sharedPreferences.edit().putLong(CACHE_TIME, Date().time)
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
@@ -81,8 +78,8 @@ class TrendingPresenter (
         requestQueue.add(jsonArrayRequest)
     }
 
-    private fun checkDuration() : Boolean {
-        val cacheTime = sharedPreferences.getLong("cacheTime", 0)
+    private fun checkCacheNotExpired() : Boolean {
+        val cacheTime = sharedPreferences.getLong(CACHE_TIME, 0)
         return (cacheTime != 0L && TimeUnit.HOURS.convert (Date().time - cacheTime, TimeUnit.MILLISECONDS) < 2)
     }
 
@@ -119,5 +116,15 @@ class TrendingPresenter (
             view.setPresenter(trendingPresenter)
             return trendingPresenter
         }
+
+        private const val NAME = "name"
+        private const val AUTHOR = "author"
+        private const val AVATAR = "avatar"
+        private const val DESCRIPTION = "description"
+        private const val LANGUAGE = "language"
+        private const val LANGUAGE_COLOR = "languageColor"
+        private const val STARS = "stars"
+        private const val FORKS = "forks"
+        private val CACHE_TIME = "cacheTime"
     }
 }
