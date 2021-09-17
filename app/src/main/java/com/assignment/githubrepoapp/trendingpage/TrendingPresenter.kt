@@ -1,32 +1,33 @@
 package com.assignment.githubrepoapp.trendingpage
 
-import android.content.Context
 import android.content.SharedPreferences
-import java.util.concurrent.TimeUnit
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.Volley
 import com.assignment.githubrepoapp.cache.DatabaseOpenHelper
+import com.assignment.githubrepoapp.data.JsonArrayRequestWrapper
 import com.assignment.githubrepoapp.data.model.RepoListModel
 import com.assignment.githubrepoapp.navigator.Navigator
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
-class TrendingPresenter (
+class TrendingPresenter constructor(
     private var view : TrendingContract.View?,
-    private val context : Context,
     private val navigator : Navigator,
     private val dbHelper: DatabaseOpenHelper,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val repoListModelArrayList: ArrayList<RepoListModel> = ArrayList()
 ) : TrendingContract.Presenter {
 
-    private val url: String = "https://private-anon-0e99465514-githubtrendingapi.apiary-mock.com/repositories"
-    private var repoListModelArrayList = ArrayList<RepoListModel>()
+    init {
+        view?.setPresenter(this)
+    }
 
     override fun getData() {
         if (checkCacheNotExpired()) {
@@ -34,53 +35,49 @@ class TrendingPresenter (
             view?.initAdapter(repoListModelArrayList)
         } else {
             view?.startShimmer()
-            retriveData()
+            view?.retrieveData()
         }
     }
 
-    override fun retriveData() {
-        repoListModelArrayList = ArrayList()
+    override fun onSuccess(response: JSONArray) {
+        repoListModelArrayList.clear()
         view?.initAdapter(repoListModelArrayList)
-        val requestQueue: RequestQueue = Volley.newRequestQueue(context)
-        val jsonArrayRequest = JsonArrayRequest(
-            Request.Method.GET, url, null,
-            Response.Listener { response ->
-                try {
-                    dbHelper.deleteDb()
-                    view?.stopShimmer()
-                    view?.showRecyclerView()
-                    for (i in 0 until response.length()) {
-                        val jsonObject : JSONObject = response.getJSONObject(i)
-                        val repo = RepoListModel(
-                            jsonObject.getString(NAME),
-                            jsonObject.getString(AUTHOR),
-                            jsonObject.getString(AVATAR),
-                            jsonObject.getString(DESCRIPTION),
-                            jsonObject.getString(LANGUAGE),
-                            jsonObject.getString(LANGUAGE_COLOR),
-                            jsonObject.getString(STARS).toInt(),
-                            jsonObject.getString(FORKS).toInt()
-                        )
-                        Log.d("Puja: ", "Notifying Adapter notifyItemInserted ( $i ) in presenter")
-                        repoListModelArrayList.add(repo)
-                        view?.notifyAdapterItemInserted(i)
-                        dbHelper.saveReposToDb(repo)
-                    }
-                    sharedPreferences.edit().putLong(CACHE_TIME, Date().time)
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-            }, Response.ErrorListener { error ->
-                error.printStackTrace()
-                navigator.launchErrorPage()
+        try {
+            dbHelper.deleteDb()
+            view?.stopShimmer()
+            view?.showRecyclerView()
+            for (i in 0 until response.length()) {
+                val jsonObject: JSONObject = response.getJSONObject(i)
+                val repo = RepoListModel(
+                    jsonObject.getString(NAME),
+                    jsonObject.getString(AUTHOR),
+                    jsonObject.getString(AVATAR),
+                    jsonObject.getString(DESCRIPTION),
+                    jsonObject.getString(LANGUAGE),
+                    jsonObject.getString(LANGUAGE_COLOR),
+                    jsonObject.getString(STARS).toInt(),
+                    jsonObject.getString(FORKS).toInt()
+                )
+                //Log.d("Puja: ", "Notifying Adapter notifyItemInserted ( $i ) in presenter")
+                repoListModelArrayList.add(repo)
+                view?.notifyAdapterItemInserted(i)
+                dbHelper.saveReposToDb(repo)
             }
-        )
-        requestQueue.add(jsonArrayRequest)
+            sharedPreferences.edit().putLong(CACHE_TIME, Date().time)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onFailure(error: Any) {
+        //printStackTrace(error)
+        navigator.launchErrorPage()
     }
 
     private fun checkCacheNotExpired() : Boolean {
         val cacheTime = sharedPreferences.getLong(CACHE_TIME, 0)
-        return (cacheTime != 0L && TimeUnit.HOURS.convert (Date().time - cacheTime, TimeUnit.MILLISECONDS) < 2)
+        return (cacheTime != 0L && TimeUnit.HOURS.convert (
+            Date().time - cacheTime, TimeUnit.MILLISECONDS) < 2)
     }
 
     override fun rearrangeListByName() {
@@ -94,29 +91,11 @@ class TrendingPresenter (
     }
 
     override fun onDestroy() {
-        view = null
         view?.clearAdapterData()
+        view = null
     }
 
     companion object {
-        fun createAndAttach(
-            view : TrendingContract.View,
-            context : Context,
-            navigator: Navigator,
-            dbHelper: DatabaseOpenHelper,
-            sharedPreferences: SharedPreferences
-        ): TrendingContract.Presenter {
-            val trendingPresenter = TrendingPresenter(
-                view,
-                context,
-                navigator,
-                dbHelper,
-                sharedPreferences
-            )
-            view.setPresenter(trendingPresenter)
-            return trendingPresenter
-        }
-
         private const val NAME = "name"
         private const val AUTHOR = "author"
         private const val AVATAR = "avatar"

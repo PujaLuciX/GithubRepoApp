@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.Gravity
 import android.view.MenuInflater
 import android.view.MotionEvent
@@ -13,6 +12,11 @@ import android.view.View.OnTouchListener
 import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.Volley
 import com.assignment.githubrepoapp.R
 import com.assignment.githubrepoapp.adapter.RepoListAdapter
 import com.assignment.githubrepoapp.cache.DatabaseOpenHelper
@@ -24,29 +28,47 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
     private lateinit var presenter: TrendingContract.Presenter
     private lateinit var adapter: RepoListAdapter
 
+    private val url: String = "https://private-anon-0e99465514-githubtrendingapi.apiary-mock.com/repositories"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trending)
-        TrendingPresenter.createAndAttach(this, applicationContext, navigator = Navigator(this),
-            dbHelper = DatabaseOpenHelper(this), sharedPreferences = getSharedPreferences("gitAppSharedPref", Context.MODE_PRIVATE)
+        TrendingPresenter(this, navigator = Navigator(this),
+            dbHelper = DatabaseOpenHelper(this),
+            sharedPreferences = getSharedPreferences("gitAppSharedPref", Context.MODE_PRIVATE)
         )
         presenter.getData()
         pullToRefresh()
         threeDotClick()
     }
 
+    override fun retrieveData() {
+        val requestQueue: RequestQueue = Volley.newRequestQueue(this)
+        val jsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET, url, null,
+            Response.Listener {
+                response -> presenter.onSuccess(response)
+            }, Response.ErrorListener {
+                error -> presenter.onFailure(error)
+            }
+        )
+        requestQueue.add(jsonArrayRequest)
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun threeDotClick() {
-        header.setOnTouchListener(OnTouchListener { v, event ->
-            val DRAWABLE_RIGHT = 2
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                if (event.rawX >= header.getPaddingRight() - header.getCompoundDrawables().get(DRAWABLE_RIGHT).getBounds().width()) {
-                    displayPopUp(v)
-                    return@OnTouchListener true
+        header.setOnTouchListener(
+            OnTouchListener { v, event ->
+                val DRAWABLE_RIGHT = 2
+                if (event.action == MotionEvent.ACTION_DOWN) {
+                    if (event.rawX >= header.getPaddingRight() - header.getCompoundDrawables().get(DRAWABLE_RIGHT).getBounds().width()) {
+                        displayPopUp(v)
+                        return@OnTouchListener true
+                    }
                 }
+                false
             }
-            false
-        })
+        )
     }
 
     private fun displayPopUp(v: View) {
@@ -87,7 +109,7 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
     }
 
     override fun clearAdapterData() {
-        recycler_view_repo_list.setAdapter(null)
+        recycler_view_repo_list.adapter = null
     }
 
     override fun setPresenter(
@@ -97,12 +119,12 @@ class TrendingActivity : AppCompatActivity(), TrendingContract.View {
     }
 
     private fun pullToRefresh() {
-        Log.d("Puja: ", "Pull to refresh !!")
+        //Log.d("Puja: ", "Pull to refresh !!")
         swipe_refresh_list.setOnRefreshListener {
             swipe_refresh_list.visibility = View.VISIBLE
             Handler().postDelayed({
                 swipe_refresh_list.isRefreshing = false
-                presenter.retriveData()
+                retrieveData()
             }, 4000)
         }
     }

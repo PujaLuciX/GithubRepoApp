@@ -1,26 +1,25 @@
 package com.assignment.githubrepoapp
 
-import android.content.Context
 import android.content.SharedPreferences
-import com.android.volley.RequestQueue
-import com.android.volley.toolbox.Volley
 import com.assignment.githubrepoapp.cache.DatabaseOpenHelper
 import com.assignment.githubrepoapp.data.model.RepoListModel
 import com.assignment.githubrepoapp.navigator.Navigator
 import com.assignment.githubrepoapp.trendingpage.TrendingContract
 import com.assignment.githubrepoapp.trendingpage.TrendingPresenter
+import io.mockk.CapturingSlot
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
+import junit.framework.Assert.assertEquals
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class TrendingPresenterTest {
@@ -28,10 +27,7 @@ class TrendingPresenterTest {
     private lateinit var presenter: TrendingContract.Presenter
 
     @MockK
-    private var view: TrendingContract.View? = null
-
-    @MockK
-    private lateinit var context: Context
+    private lateinit var view: TrendingContract.View
 
     @MockK
     private lateinit var navigator: Navigator
@@ -43,104 +39,135 @@ class TrendingPresenterTest {
     private lateinit var sharedPreferences: SharedPreferences
 
     @MockK
-    private var requestQueue: RequestQueue? = null
+    private lateinit var sharedPreferencesEditor: SharedPreferences.Editor
 
-    private var repoListModelArrayList = ArrayList<RepoListModel>()
+    @MockK
+    private lateinit var repoListModelArrayList: ArrayList<RepoListModel>
 
+    @MockK
+    private lateinit var repoListModel: RepoListModel
+
+    private val repoListModelCaptor = CapturingSlot<RepoListModel>()
+
+    private val repoListModelCaptorForDb = CapturingSlot<RepoListModel>()
+
+    @MockK
+    private lateinit var jsonArray: JSONArray
+
+    @MockK
     private lateinit var jsonObject: JSONObject
 
     private val mockWebServer = MockWebServer()
 
     @Before
     fun setup() {
-        MockKAnnotations.init(this, true)
-        requestQueue = Volley.newRequestQueue(context)
+        MockKAnnotations.init(this, relaxUnitFun = true)
         mockWebServer.start(8080)
-        presenter = TrendingPresenter(view, context, navigator, dbHelper, sharedPreferences)
+        presenter = TrendingPresenter(view, navigator, dbHelper, sharedPreferences, repoListModelArrayList)
     }
 
     @Test
     fun testGetDataIfCacheNotExpired() {
-        every { checkCacheNotExpired() }.returns(true)
+        val listFromDb = ArrayList<RepoListModel>()
+        listFromDb.add(repoListModel)
+        every { sharedPreferences.getLong(CACHE_TIME, 0) }.returns(Date().time)
+        every { dbHelper.getReposFromDb() } returns listFromDb
+        every { repoListModelArrayList.addAll(listFromDb) } returns true
+
         presenter.getData()
+
         verify {
-            repoListModelArrayList.addAll(dbHelper.getReposFromDb())
-            view?.initAdapter(repoListModelArrayList)
+            repoListModelArrayList.addAll(listFromDb)
+            view.initAdapter(repoListModelArrayList)
         }
     }
-
 
     @Test
     fun testGetDataIfCacheExpired() {
-        every { checkCacheNotExpired() }.returns(false)
+        every { sharedPreferences.getLong(CACHE_TIME, 0) } returns 0L
+        every { repoListModelArrayList.clear() } returns Unit
+        every { repoListModelArrayList.size } returns 1
+
         presenter.getData()
+
         verify {
-            view?.startShimmer()
-            testRetrieveData()
+            view.startShimmer()
+            view.retrieveData()
         }
     }
 
-    @Test
-    fun testRetrieveData() {
-        presenter.retriveData()
-        repoListModelArrayList = ArrayList()
-        view?.initAdapter(repoListModelArrayList)
+        @Test
+    fun testOnSuccess() {
+        every { sharedPreferences.getLong(CACHE_TIME, 0) } returns 0L
+        every { repoListModelArrayList.clear() } returns Unit
+        every { repoListModelArrayList.size } returns 1
+        every { sharedPreferences.edit() } returns sharedPreferencesEditor
+        every { sharedPreferencesEditor.putLong(CACHE_TIME, any()) } returns sharedPreferencesEditor
+        every { jsonArray.length() } returns 1
+        every { jsonArray.getJSONObject(0) } returns jsonObject
+        every { jsonObject.getString(NAME) } returns NAME
+        every { jsonObject.getString(AUTHOR) } returns AUTHOR
+        every { jsonObject.getString(AVATAR) } returns AVATAR
+        every { jsonObject.getString(DESCRIPTION) } returns DESCRIPTION
+        every { jsonObject.getString(LANGUAGE) } returns LANGUAGE
+        every { jsonObject.getString(LANGUAGE_COLOR) } returns LANGUAGE_COLOR
+        every { jsonObject.getString(STARS) } returns "0"
+        every { jsonObject.getString(FORKS) } returns "0"
+        every { repoListModelArrayList.add(any()) } returns true
+
+        presenter.onSuccess(jsonArray)
+
         mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(JSON_OBJECT))
-        //assertThat(mockWebServer.takeRequest().path,URL)
+        verify {
+            repoListModelArrayList.clear()
+            view.initAdapter(repoListModelArrayList)
+        }
+        verify {
+            dbHelper.deleteDb()
+            view.stopShimmer()
+            view.showRecyclerView()
+            repoListModelArrayList.add(capture(repoListModelCaptor))
+            view.notifyAdapterItemInserted(0)
+            dbHelper.saveReposToDb(capture(repoListModelCaptorForDb))
+            sharedPreferencesEditor.putLong(CACHE_TIME, any())
+        }
+            assertEquals(repoListModelCaptor.captured, repoListModelCaptorForDb.captured)
+            assertEquals(repoListModelCaptor.captured.author, AUTHOR)
+    }
 
-        dbHelper.deleteDb()
-        view?.stopShimmer()
-        view?.showRecyclerView()
-        val repo = RepoListModel(
-            jsonObject.getString(NAME),
-            jsonObject.getString(AUTHOR),
-            jsonObject.getString(AVATAR),
-            jsonObject.getString(DESCRIPTION),
-            jsonObject.getString(LANGUAGE),
-            jsonObject.getString(LANGUAGE_COLOR),
-            jsonObject.getString(STARS).toInt(),
-            jsonObject.getString(FORKS).toInt()
-        )
-        repoListModelArrayList.add(repo)
-        view?.notifyAdapterItemInserted(0)
-        dbHelper.saveReposToDb(repo)
-        sharedPreferences.edit().putLong(CACHE_TIME, Date().time)
-
+    @Test
+    fun testOnFailure() {
+        presenter.onFailure(ERROR)
+        verify {
+            navigator.launchErrorPage()
+        }
     }
 
     @Test
     fun testRearrangeListByName() {
+        every { repoListModelArrayList.size }. returns(1)
         presenter.rearrangeListByName()
         verify {
             repoListModelArrayList.sortBy { it.name }
-            view?.initAdapter(repoListModelArrayList)
+            view.initAdapter(repoListModelArrayList)
         }
     }
 
     @Test
     fun testRearrangeListByStars() {
+        every { repoListModelArrayList.size }. returns(1)
         presenter.rearrangeListByStars()
         verify {
             repoListModelArrayList.sortByDescending { it.stars }
-            view?.initAdapter(repoListModelArrayList)
+            view.initAdapter(repoListModelArrayList)
         }
     }
-
-    private fun checkCacheNotExpired(): Boolean {
-        val cacheTime = sharedPreferences.getLong(CACHE_TIME, 0)
-        return (cacheTime != 0L && TimeUnit.HOURS.convert(
-            Date().time - cacheTime,
-            TimeUnit.MILLISECONDS
-        ) < 2)
-    }
-
 
     @Test
     fun testOnDestroy() {
         presenter.onDestroy()
         verify {
-            view = null
-            view?.clearAdapterData()
+            view.clearAdapterData()
         }
     }
 
@@ -161,6 +188,7 @@ class TrendingPresenterTest {
         private const val STARS = "stars"
         private const val FORKS = "forks"
         private val CACHE_TIME = "cacheTime"
+        private val ERROR = "Error"
         private const val JSON_OBJECT = "[\n" +
             " {\n" +
             "    \"author\": \"kusti8\",\n" +
