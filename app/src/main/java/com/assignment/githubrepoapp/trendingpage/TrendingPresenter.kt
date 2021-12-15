@@ -1,13 +1,7 @@
 package com.assignment.githubrepoapp.trendingpage
 
 import android.content.SharedPreferences
-import android.util.Log
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
 import com.assignment.githubrepoapp.cache.DatabaseOpenHelper
-import com.assignment.githubrepoapp.data.JsonArrayRequestWrapper
 import com.assignment.githubrepoapp.data.model.RepoListModel
 import com.assignment.githubrepoapp.navigator.Navigator
 import org.json.JSONArray
